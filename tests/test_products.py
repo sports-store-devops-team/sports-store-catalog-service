@@ -16,8 +16,13 @@ SAMPLE_PRODUCT = {
     "image_url": "",
     "base_price": 129.99,
     "variants": [
-        {"sku": "VR-BLK-42", "color": "Black", "size": "42",
-         "price": 129.99, "stock_quantity": 15},
+        {
+            "sku": "VR-BLK-42",
+            "color": "Black",
+            "size": "42",
+            "price": 129.99,
+            "stock_quantity": 15,
+        },
     ],
     "is_active": True,
 }
@@ -28,8 +33,13 @@ NEW_PRODUCT = {
     "category": "basketball-shoes",
     "base_price": 149.99,
     "variants": [
-        {"sku": "CM-WHT-43", "color": "White", "size": "43",
-         "price": 149.99, "stock_quantity": 10},
+        {
+            "sku": "CM-WHT-43",
+            "color": "White",
+            "size": "43",
+            "price": 149.99,
+            "stock_quantity": 10,
+        },
     ],
 }
 
@@ -81,12 +91,8 @@ def test_get_product_unknown_slug_404(client):
 
 def test_create_product_as_admin(client, admin_headers):
     with patch("routes.products.products_collection") as mock_col:
-        mock_col.insert_one = AsyncMock(
-            return_value=MagicMock(inserted_id=PRODUCT_ID)
-        )
-        response = client.post(
-            "/api/products", json=NEW_PRODUCT, headers=admin_headers
-        )
+        mock_col.insert_one = AsyncMock(return_value=MagicMock(inserted_id=PRODUCT_ID))
+        response = client.post("/api/products", json=NEW_PRODUCT, headers=admin_headers)
 
     assert response.status_code == 201
     assert response.json() == {"id": PRODUCT_ID}
@@ -105,9 +111,7 @@ def test_create_product_anonymous_401(client):
 def test_delete_product_soft_deletes(client, admin_headers):
     with patch("routes.products.products_collection") as mock_col:
         mock_col.update_one = AsyncMock(return_value=MagicMock(matched_count=1))
-        response = client.delete(
-            f"/api/products/{PRODUCT_ID}", headers=admin_headers
-        )
+        response = client.delete(f"/api/products/{PRODUCT_ID}", headers=admin_headers)
 
     assert response.status_code == 200
     update = mock_col.update_one.call_args.args[1]

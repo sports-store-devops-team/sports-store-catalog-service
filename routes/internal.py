@@ -19,9 +19,7 @@ def find_variant(doc: dict | None, sku: str) -> dict | None:
 
 @router.get("/variants/{sku}")
 async def get_variant(sku: str):
-    doc = await products_collection.find_one(
-        {"variants.sku": sku, "is_active": True}
-    )
+    doc = await products_collection.find_one({"variants.sku": sku, "is_active": True})
     variant = find_variant(doc, sku)
     if variant is None:
         raise HTTPException(status_code=404, detail="SKU not found")

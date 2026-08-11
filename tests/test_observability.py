@@ -56,10 +56,19 @@ def test_not_found_status_is_counted_without_raw_path(client):
     assert client.get(raw_path).status_code == 404
     metrics = client.get("/metrics").text
     assert raw_path not in metrics
-    assert _sample_value(metrics, "http_requests_total", {
-        "service": "catalog-service", "method": "GET",
-        "route": "__unmatched__", "status_code": "404",
-    }) >= 1
+    assert (
+        _sample_value(
+            metrics,
+            "http_requests_total",
+            {
+                "service": "catalog-service",
+                "method": "GET",
+                "route": "__unmatched__",
+                "status_code": "404",
+            },
+        )
+        >= 1
+    )
 
 
 def test_json_formatter_emits_safe_one_line_fields():
@@ -72,6 +81,15 @@ def test_json_formatter_emits_safe_one_line_fields():
     rendered = JsonFormatter("catalog-service").format(record)
     payload = json.loads(rendered)
     assert "\n" not in rendered
-    assert set(payload) == {"timestamp", "level", "service", "event", "method", "route", "status", "duration_ms"}
+    assert set(payload) == {
+        "timestamp",
+        "level",
+        "service",
+        "event",
+        "method",
+        "route",
+        "status",
+        "duration_ms",
+    }
     assert payload["service"] == "catalog-service"
     assert payload["route"] == "/api/items/{item_id}"
